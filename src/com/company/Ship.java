@@ -8,7 +8,6 @@ public class Ship {
     private int numberOfSquares;
     private List<ShipUnitPosition> positions = new ArrayList<>();
     private boolean horizontal;
-    private boolean isAlive = true;
 
     public Ship(int number) {
         this.life = number;
@@ -19,8 +18,8 @@ public class Ship {
         return life;
     }
 
-    public void setLife(int life) {
-        this.life = life;
+    public List<ShipUnitPosition> getPositions() {
+        return positions;
     }
 
     public int getNumberOfSquares() {
@@ -36,11 +35,7 @@ public class Ship {
         this.horizontal = horizontal;
     }
 
-    public List<ShipUnitPosition> getPositions() {
-        return positions;
-    }
-
-    public void setAlive(boolean alive) {
-        isAlive = alive;
+    public void setLife(int life) {
+        this.life = life;
     }
 }
