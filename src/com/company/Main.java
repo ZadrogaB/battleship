@@ -11,10 +11,12 @@ public class Main {
         Board boardClass = new Board();
 
 	// write your code here
-        boardClass.fillBoardWithWater();
-        boardClass.printBoard();
+        boardClass.fillBoardsWithWater();
+        //boardClass.printBoard();
 
-        boardClass.placeShips();
+        boardClass.placeShipComputer();
+        boardClass.printComputerBoard();
+        //boardClass.placeShipsPlayer();
 
         for (int i=0;;i++){
             boardClass.shoot();

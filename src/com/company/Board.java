@@ -2,20 +2,23 @@ package com.company;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Board {
     private char[][] board = new char[10][10];
+    private char[][] computerBoard = new char[10][10];
     List<Ship> playerShips = createShips();
     List<Ship> computerShips = createShips();
     Scanner scanner = new Scanner(System.in);
 
-    public void fillBoardWithWater(){
+    public void fillBoardsWithWater(){
         int rozmiar = board.length;
 
         for (int row=0; row<rozmiar; row++){
             for (int column=0; column<rozmiar; column++){
                 board[row][column]='W';
+                computerBoard[row][column]='W';
             }
         }
     }
@@ -37,7 +40,24 @@ public class Board {
         }
     }
 
-    public void placeShips(){
+    public void printComputerBoard(){
+        int rozmiar = computerBoard.length;
+
+        System.out.print("\t");
+        for (int i=0; i<rozmiar; i++){ //drukuje nagłówek kolumn
+            System.out.print(i+"\t");
+        }
+        System.out.println();
+        for (int row=0; row<rozmiar;row++){
+            System.out.print(row+":\t");
+            for (int column=0; column<rozmiar; column++){
+                System.out.print(computerBoard[row][column]+"\t");
+            }
+            System.out.println();
+        }
+    }
+
+    public void placeShipsPlayer(){
 
         int row, column;
         String isHorizontal;
@@ -65,10 +85,40 @@ public class Board {
                 for (int i=0; i<ship.getNumberOfSquares(); i++) {
                     ship.setHorizontal(true);
                     board[row][column+i] = 'S';
-                    ship.setPositions(row+i, column);
+                    ship.setPositions(row, column+i);
                 }
             }
             printBoard();
+        }
+    }
+
+    public void placeShipComputer(){
+        int row, column;
+        Random random = new Random();
+
+        for (Ship ship : computerShips) {
+            boolean horizontal = random.nextBoolean();
+
+            if (horizontal){
+                row = getRandomNumberInRange(0,9);
+                column =getRandomNumberInRange(0,9-ship.getNumberOfSquares());
+                for (int i=0; i<ship.getNumberOfSquares(); i++) {
+                    computerBoard[row][column+i] = 'C';
+                    ship.setPositions(row, column+i);
+                }
+            } else {
+                row = getRandomNumberInRange(0,9-ship.getNumberOfSquares());
+                column = getRandomNumberInRange(0,9);
+                for (int i=0; i<ship.getNumberOfSquares(); i++) {
+                    computerBoard[row+i][column] = 'C';
+                    ship.setPositions(row+i, column);
+                }
+            }
+
+            ship.setHorizontal(horizontal);
+
+            //System.out.println("Row = " + row + ", Column = " + column + ", Horizontal = " + horizontal);
+
         }
     }
 
@@ -84,6 +134,12 @@ public class Board {
         checkIfHit(row, column);
         printBoard();
 
+    }
+
+    public void shootComputer(){
+        int row, column;
+        row = getRandomNumberInRange(0,9);
+        column = getRandomNumberInRange(0,9);
     }
 
     public void checkIfHit(int row, int column){
@@ -114,5 +170,15 @@ public class Board {
         shipList.add(shipFour);
         shipList.add(shipFive);
         return shipList;
+    }
+
+    private static int getRandomNumberInRange(int min, int max) {
+
+        if (min >= max) {
+            throw new IllegalArgumentException("max must be greater than min");
+        }
+
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
     }
 }
