@@ -11,7 +11,7 @@ public class Main {
         Board boardClass = new Board();
 
 	// write your code here
-        boardClass.fillBoardsWithWater();
+        boardClass.fillBoardsWithWater();  //game controller
         //boardClass.printBoard();
 
         boardClass.placeShipComputer();
