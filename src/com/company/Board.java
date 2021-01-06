@@ -89,7 +89,7 @@ public class Board {
             }
             printBoard();
         }
-    }
+    } //Do poprawy (dodać brak kolizji + zmienić rysowanie na metodę drawShip)
 
     public void placeShipComputer(){
         int row, column;
@@ -97,7 +97,7 @@ public class Board {
         boolean testInterference;
 
         for (Ship ship : computerShips) {
-            System.out.println("Losowanie pozycji statku: " + ship.getNumberOfSquares());
+            //System.out.println("Losowanie pozycji statku: " + ship.getNumberOfSquares());
             boolean horizontal = random.nextBoolean();
 
             do {
@@ -107,24 +107,24 @@ public class Board {
                     column = getRandomNumberInRange(0, 9 - ship.getNumberOfSquares());
                     for (int i = 0; i < ship.getNumberOfSquares(); i++) {
                         ship.setPositions(row, column + i);
-                        setNeighbours(ship, row, column, ship.isHorizontal());
+                        setNeighbours(ship, row, column, true);
                     }
                 } else {
                     row = getRandomNumberInRange(0, 9 - ship.getNumberOfSquares());
                     column = getRandomNumberInRange(0, 9);
                     for (int i = 0; i < ship.getNumberOfSquares(); i++) {
                         ship.setPositions(row + i, column);
-                        setNeighbours(ship, row, column, ship.isHorizontal());
+                        setNeighbours(ship, row, column, false);
                     }
                 }
                 testInterference=isShipInterfere(computerShips, ship);
             } while (testInterference);
             ship.setHorizontal(horizontal);
-            System.out.println("Row = " + row + ", Column = " + column);
+            //System.out.println("Row = " + row + ", Column = " + column);
             drawShip(ship);
-            printComputerBoard();
+            //printComputerBoard();
         }
-
+        //computerShips.get(2).printNeighbours();
     }
 
     public void drawShip(Ship ship){
@@ -217,19 +217,35 @@ public class Board {
 
     public void setNeighbours (Ship ship, int row, int column, boolean horizontal){
         for (int i=0; i<ship.getNumberOfSquares(); i++) {
+           //System.out.println("Liczba kratek statku = " + ship.getNumberOfSquares() + " Iteracja = " + i);
             if (horizontal) {
-                ship.setNeighbours(row + i, column);//pozycja statku
-                if (row != 9) ship.setNeighbours(row + 1, column + i);//rząd poniżej
-                if (row != 0) ship.setNeighbours(row - 1, column + i);//rząd powyżej
-                if (column != 9 && i == ship.getNumberOfSquares() - 1) ship.setNeighbours(row, column + 1);//po prawej
-                if (column != 0 && i == 0) ship.setNeighbours(row, column - 1);//po lewej
+                ship.setNeighbours(row, column + i);//pozycja statku
+                if (row != 9) {
+                    ship.setNeighbours(row + 1, column + i);//rząd poniżej
+                }
+                if (row != 0) {
+                    ship.setNeighbours(row - 1, column + i);//rząd powyżej
+                }
+                if (column+i != 9 && i == ship.getNumberOfSquares()-1 ) {
+                    ship.setNeighbours(row, column + i + 1);//po prawej
+                }
+                if (column != 0 && i == 0) {
+                    ship.setNeighbours(row, column - 1);//po lewej
+                }
             } else {
                 ship.setNeighbours(row + i, column);//pozycja statku
-                if (column != 9) ship.setNeighbours(row + i, column + 1);//kolumna po prawej
-                if (column != 0) ship.setNeighbours(row + i, column - 1);//kolumna po lewej
-                if (row != 9 && i == ship.getNumberOfSquares() - 1)
-                    ship.setNeighbours(row + 1, column); //poniżej statku
-                if (row != 0 && i == 0) ship.setNeighbours(row - 1, column); //powyżej statkiem
+                if (column != 9) {
+                    ship.setNeighbours(row + i, column + 1);//kolumna po prawej
+                }
+                if (column != 0) {
+                    ship.setNeighbours(row + i, column - 1);//kolumna po lewej
+                }
+                if (row+i != 9 && i == ship.getNumberOfSquares()-1) {
+                    ship.setNeighbours(row + i + 1, column); //poniżej statku
+                }
+                if (row != 0 && i == 0){
+                    ship.setNeighbours(row - 1, column); //powyżej statkiem
+                }
             }
         }
     }
@@ -250,7 +266,7 @@ public class Board {
             }
         }
 
-        System.out.println("isShipInterfere = "+isShipInterfere);
+       // System.out.println("isShipInterfere = "+isShipInterfere);
 
         return  isShipInterfere;
     }

@@ -71,16 +71,15 @@ public class Ship {
         createAllPositionsSet();
         positions.removeAll(allPositionsSet);
         neighbours.removeAll(allPositionsSet);
-//        for (int i = positions.size()-1; i>=0; i--){
-//            positions.remove(i);
-//            System.out.println("Test usuwania pozycji" + i + positions);
-//        }
-//        for (int i = neighbours.size()-1; i>=0; i--){
-//            neighbours.remove(i);
-//            System.out.println("Test usuwania sąsiadów" + i + positions.size());
-//
-//        }
-        //System.out.println("Usunięto pozycje");
+    }
+
+    public void printNeighbours(){
+        int loopCount = 0;
+        System.out.println("Statek: " + numberOfSquares );
+        for (UnitPosition unitPosition : neighbours){
+            loopCount++;
+            System.out.println(loopCount + ") Row = " + unitPosition.getRow() + "\nColumn = " + unitPosition.getColumn());
+        }
     }
 
 }
