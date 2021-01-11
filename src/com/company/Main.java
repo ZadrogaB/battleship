@@ -21,7 +21,7 @@ public class Main {
 //        boardClass.printBoard();
 
         for (int i=0;;i++){
-            boardClass.printBoard();
+            boardClass.printPlayerBoard();
             boardClass.shootPlayer();
             boardClass.isWin("Player");
             boardClass.shootComputer();

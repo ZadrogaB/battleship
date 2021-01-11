@@ -7,49 +7,43 @@ public class Board {
     private char[][] computerBoard = new char[10][10];
     List<Ship> playerShips = createShips();
     List<Ship> computerShips = createShips();
+    Set<Ship> deadShipsComputer = new HashSet<>();
+    Set<Ship> deadShipsPlayer = new HashSet<>();
     Scanner scanner = new Scanner(System.in);
     Utils utils = new Utils();
 
     public void fillBoardsWithWater(){
-        int rozmiar = playerBoard.length;
-
-        for (int row=0; row<rozmiar; row++){
-            for (int column=0; column<rozmiar; column++){
+        for (int row=0; row<playerBoard.length; row++){
+            for (int column=0; column<playerBoard.length; column++){
                 playerBoard[row][column]='W';
                 computerBoard[row][column]='W';
             }
         }
     }
 
-    public void printBoard(){
-        int rozmiar = playerBoard.length;
-
-        System.out.print("\t");
-        for (int i=0; i<rozmiar; i++){ //drukuje nagłówek kolumn
-            System.out.print(i+"\t");
-        }
-        System.out.println();
-        for (int row=0; row<rozmiar;row++){
-            System.out.print(row+":\t");
-            for (int column=0; column<rozmiar; column++){
-                System.out.print(playerBoard[row][column]+"\t");
-            }
-            System.out.println();
-        }
+    public void printPlayerBoard(){
+        printBoardCommon(playerBoard.length, false);
     }
 
     public void printComputerBoard(){
-        int rozmiar = computerBoard.length;
+        printBoardCommon(computerBoard.length, true);
+    }
 
+    public void printBoardCommon(int length, boolean isComputer){
         System.out.print("\t");
-        for (int i=0; i<rozmiar; i++){ //drukuje nagłówek kolumn
+        for (int i=0; i<length; i++){ //drukuje nagłówek kolumn
             System.out.print(i+"\t");
         }
         System.out.println();
-        for (int row=0; row<rozmiar;row++){
+        for (int row=0; row<length;row++){
             System.out.print(row+":\t");
-            for (int column=0; column<rozmiar; column++){
-                System.out.print(computerBoard[row][column]+"\t");
+            for (int column=0; column<length; column++){
+                if(isComputer==true) {
+                    System.out.print(computerBoard[row][column] + "\t");
+                } else {
+                    System.out.print(playerBoard[row][column] + "\t");
+
+                }
             }
             System.out.println();
         }
@@ -84,7 +78,7 @@ public class Board {
                         ship.setPositions(row + i, column);
                         setNeighbours(ship, row, column, false); //Ship ship, int row, int column, boolean horizontal
                     }
-                } else if (isHorizontal.equals("T")) {
+                } else {
                     for (int i = 0; i < ship.getNumberOfSquares(); i++) {
                         ship.setHorizontal(true);
                         //board[row][column + i] = 'S';
@@ -94,7 +88,7 @@ public class Board {
                 }
                 testInterference=isShipInterfere(playerShips, ship);
             }while(testInterference);
-            drawShipPlayer(ship);
+            drawShip(ship, false);
         }
     }
 
@@ -127,32 +121,22 @@ public class Board {
                 testInterference=isShipInterfere(computerShips, ship);
             } while (testInterference);
             ship.setHorizontal(horizontal);
-            //System.out.println("Row = " + row + ", Column = " + column);
-            drawShipComputer(ship);
-            //printComputerBoard();
+            drawShip(ship, true);
         }
-        //computerShips.get(2).printNeighbours();
     }
 
-    public void drawShipComputer(Ship ship){
+    public void drawShip(Ship ship, boolean isComputer){
         int row, column;
         Set<UnitPosition> drawPositions = ship.getPositions();
 
         for (UnitPosition unitPosition : drawPositions){
             row = unitPosition.getRow();
             column = unitPosition.getColumn();
-            computerBoard[row][column] = 'C';
-        }
-    }
-
-    public void drawShipPlayer(Ship ship){
-        int row, column;
-        Set<UnitPosition> drawPositions = ship.getPositions();
-
-        for (UnitPosition unitPosition : drawPositions){
-            row = unitPosition.getRow();
-            column = unitPosition.getColumn();
-            playerBoard[row][column] = 'S';
+            if(isComputer==false) {
+                playerBoard[row][column] = 'S';
+            } else {
+                computerBoard[row][column] = 'C';
+            }
         }
     }
 
@@ -178,47 +162,41 @@ public class Board {
         }while(playerBoard[row][column]=='X');
         playerBoard[row][column]='X';
         checkIfHit(row, column, true);
-        printBoard();
+        printPlayerBoard();
     } // Shotter
 
-
     public void checkIfHit(int row, int column, boolean isComputer){
-        Set<Ship> deadShipsComputer = new HashSet<>();
-        Set<Ship> deadShipsPlayer = new HashSet<>();
 
         if(isComputer) {
-            for (Ship ship : playerShips) {
-                Set<UnitPosition> positions = ship.getPositions();
-                for (UnitPosition unitPosition : positions) {
-                    if (unitPosition.getColumn() == column && unitPosition.getRow() == row) {
-                        ship.setLife(ship.getLife() - 1);
-                        System.out.println("! ! ! HIT ! ! !");
-                        System.out.println("Trafionemu statkowi potało: " + ship.getLife() + " żyć!");
-                        if(ship.getLife()==0){
-                            deadShipsPlayer.add(ship);
-                        }
-                    }
-                }
-            }
+            checkIfHitCommon(playerShips, isComputer, row, column);
             playerShips.removeIf(ship -> ship.getLife()==0);
             System.out.println("Graczowi pozostało " + playerShips.size() + " statków");
         } else {
-            for (Ship ship : computerShips) {
-                Set<UnitPosition> positions = ship.getPositions();
-                for (UnitPosition unitPosition : positions) {
-                    if (unitPosition.getColumn() == column && unitPosition.getRow() == row) {
-                        ship.setLife(ship.getLife() - 1);
-                        System.out.println("! ! ! HIT ! ! !");
-                        System.out.println("Trafionemu statkowi potało: " + ship.getLife() + " żyć!");
-                    }
-                }
-            }
+            checkIfHitCommon(computerShips, isComputer, row, column);
             computerShips.removeIf(ship -> ship.getLife()==0);
             System.out.println("Komputerowi pozostało " + computerShips.size() + " statków");
         }
 
 
     } // Shotter
+
+    public void checkIfHitCommon(List<Ship> shipList, boolean isComputer, int row, int column) {
+        for (Ship ship : shipList) {
+            Set<UnitPosition> positions = ship.getPositions();
+            for (UnitPosition unitPosition : positions) {
+                if (unitPosition.getColumn() == column && unitPosition.getRow() == row) {
+                    ship.setLife(ship.getLife() - 1);
+                    System.out.println("! ! ! HIT ! ! !");
+                    System.out.println("Trafionemu statkowi potało: " + ship.getLife() + " żyć!");
+                    if (ship.getLife() == 0 && isComputer==false) {
+                        deadShipsPlayer.add(ship);
+                    } else if (ship.getLife() == 0 && isComputer==true){
+                        deadShipsComputer.add(ship);
+                    }
+                }
+            }
+        }
+    }
 
     public List<Ship> createShips(){
         List<Ship> shipList = new ArrayList<>();
